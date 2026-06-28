@@ -1,8 +1,20 @@
 # verifiable-loop-mechanism
 
+繁體中文說明見 [README.zh-TW.md](README.zh-TW.md).
+
 A small, portable mechanism for running AI agents (Claude Code, Codex, others) semi-autonomously, where "is this round actually done?" is decided by a machine, not by the AI's feeling.
 
 Built by a non-engineer for a one-person knowledge-base operation. Status: working draft, n=1, not peer-reviewed. See `paper.md` for the full write-up.
+
+## Who is this for, and when
+
+**Who:** anyone running AI agents (Claude Code, Codex, etc.) on tasks that have an objective right or wrong, and who wants "done" decided by a machine instead of by the agent's feeling. You need to run one Python command (you do not need to write code; you can have the agent run it for you). Developers, technical-leaning knowledge workers, and one-person operators all fit, as long as the task itself is machine-checkable.
+
+**When it fits:** deployment checks, file governance, board-read completeness, link integrity, tests passing, a string appearing the right number of times (for example a function defined exactly once).
+
+**When it does not fit:** whether writing is good, whether a strategy is right, creative quality. Those have no objective grader; keep them on human or LLM-judge review.
+
+**What it solves:** the three ways an AI fakes completion (false completion, loopmaxxing, and rules dropped when the context window is compacted). It turns "done" from the agent's feeling into a machine-verifiable fact.
 
 ## The idea in one line
 
