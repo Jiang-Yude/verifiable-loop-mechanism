@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+<head><title>fixture: duplicated init (FAIL case)</title></head>
+<body>
+<script>
+function initFixedStars() { /* defines the star field */ }
+// BUG: defined/called twice -> the recurring duplication bug
+window.addEventListener('load', initFixedStars);
+window.addEventListener('resize', initFixedStars);
+</script>
+</body>
+</html>

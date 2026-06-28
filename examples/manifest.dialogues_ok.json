@@ -1,0 +1,8 @@
+{
+  "task_id": "dialogues-initFixedStars-once-PASS",
+  "description": "PASS case: initFixedStars appears exactly once",
+  "checks": [
+    { "type": "file_exists", "path": "fixtures/dialogues_ok.html" },
+    { "type": "literal_count", "path": "fixtures/dialogues_ok.html", "needle": "initFixedStars", "expect": 1, "severity": "P0" }
+  ]
+}

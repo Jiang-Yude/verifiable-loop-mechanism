@@ -1,0 +1,8 @@
+{
+  "task_id": "board-completeness-demo",
+  "description": "看板讀取/維護完整性：檔在、且沒被截斷成空檔",
+  "checks": [
+    { "type": "file_exists", "path": "fixtures/board_sample.md" },
+    { "type": "min_lines", "path": "fixtures/board_sample.md", "min_lines": 10, "severity": "P0" }
+  ]
+}

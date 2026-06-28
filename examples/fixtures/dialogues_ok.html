@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+<head><title>fixture: single init (PASS case)</title></head>
+<body>
+<script>
+// defined exactly once; bound via a local alias so the literal appears once
+const init = function initFixedStars() { /* defines the star field */ };
+window.addEventListener('load', init);
+</script>
+</body>
+</html>

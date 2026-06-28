@@ -1,0 +1,8 @@
+{
+  "task_id": "forbid-em-dash-demo",
+  "description": "House style forbids em-dash; any occurrence is a P0 (FAIL demo).",
+  "checks": [
+    { "type": "file_exists", "path": "fixtures/has_em_dash.md" },
+    { "type": "forbid", "path": "fixtures/has_em_dash.md", "pattern": "—", "severity": "P0" }
+  ]
+}

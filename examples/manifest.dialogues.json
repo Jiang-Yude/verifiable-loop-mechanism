@@ -1,0 +1,8 @@
+{
+  "task_id": "dialogues-initFixedStars-once",
+  "description": "dialogues.html 的 initFixedStars 必須剛好出現 1 次（重複=已犯兩次的 bug，P0）",
+  "checks": [
+    { "type": "file_exists", "path": "fixtures/dialogues_dup.html" },
+    { "type": "literal_count", "path": "fixtures/dialogues_dup.html", "needle": "initFixedStars", "expect": 1, "severity": "P0" }
+  ]
+}
