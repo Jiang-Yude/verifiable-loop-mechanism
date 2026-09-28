@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="給第一次接觸迴圈工程的學員：用一份課前通知，看懂 AI 如何執行、驗收、修正，直到符合停止條件。">
+  <meta name="theme-color" content="#f4efe5">
+  <meta property="og:title" content="什麼是迴圈工程？">
+  <meta property="og:description" content="播放一輪真實可見的 AI 工作流程：執行、驗收、修正、再驗收、停止。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://loop-engineering-demo.pages.dev/">
+  <link rel="canonical" href="https://loop-engineering-demo.pages.dev/">
+  <title>什麼是迴圈工程？｜互動示範</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: #27231f;
+      background: #f4efe5;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+    button, input { font: inherit; }
+    a { color: #275c4e; text-underline-offset: 4px; }
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 3px solid #b85c38;
+      outline-offset: 3px;
+    }
+    .le-app { min-height: 100vh; overflow: hidden; }
+    .le-shell { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+    .le-hero {
+      position: relative;
+      padding: 72px 0 52px;
+      border-bottom: 1px solid #cfc4b1;
+    }
+    .le-hero::after {
+      content: "";
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      right: -110px;
+      top: -130px;
+      border: 42px solid rgba(39, 92, 78, 0.10);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .le-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 18px;
+      color: #275c4e;
+      font-size: 0.83rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+    .le-kicker::before { content: ""; width: 34px; height: 3px; background: #b85c38; }
+    .le-hero h1 {
+      max-width: 880px;
+      margin: 0;
+      font-family: "Noto Serif TC", "Songti TC", serif;
+      font-size: clamp(2.35rem, 6vw, 5.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .le-hero-lead {
+      max-width: 760px;
+      margin: 28px 0 0;
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      color: #554d45;
+    }
+    .le-definition {
+      margin-top: 32px;
+      padding: 18px 22px;
+      max-width: 760px;
+      border-left: 5px solid #b85c38;
+      background: rgba(255, 255, 255, 0.52);
+      font-weight: 700;
+    }
+    .le-main { padding: 56px 0 80px; }
+    .le-section { margin-top: 72px; }
+    .le-section:first-child { margin-top: 0; }
+    .le-eyebrow {
+      margin: 0 0 8px;
+      color: #8b472d;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .le-section-title {
+      margin: 0;
+      font-family: "Noto Serif TC", "Songti TC", serif;
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      line-height: 1.22;
+    }
+    .le-section-intro { max-width: 760px; margin: 14px 0 30px; color: #5e554c; }
+    .le-demo {
+      background: #1f2926;
+      color: #f8f4ea;
+      border-radius: 24px;
+      box-shadow: 0 24px 70px rgba(47, 40, 31, 0.18);
+      overflow: hidden;
+    }
+    .le-demo-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 28px 30px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+    }
+    .le-demo-label { margin: 0; color: #e5b88e; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.10em; }
+    .le-demo-title { margin: 6px 0 0; font-size: clamp(1.25rem, 2.6vw, 1.72rem); line-height: 1.35; }
+    .le-round-badge {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      color: #17342b;
+      background: #a9dfc6;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+    .le-stage { padding: 24px 30px 30px; }
+    .le-progress-list {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin: 0 0 24px;
+      padding: 0;
+      list-style: none;
+    }
+    .le-progress-item {
+      min-height: 48px;
+      display: grid;
+      place-items: center;
+      padding: 8px 6px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      color: #aebcb6;
+      font-size: 0.78rem;
+      line-height: 1.25;
+      text-align: center;
+    }
+    .le-progress-item[data-state="done"] { color: #cce8db; border-color: rgba(169, 223, 198, 0.5); }
+    .le-progress-item[data-state="current"] { color: #1f2926; background: #e5b88e; border-color: #e5b88e; font-weight: 900; }
+    .le-current-callout {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+      padding: 16px 18px;
+      color: #22302b;
+      background: #f4efe5;
+      border-radius: 14px;
+    }
+    .le-current-callout strong { font-size: 1.06rem; }
+    .le-current-callout span { color: #5e554c; font-size: 0.86rem; }
+    .le-panels { display: grid; grid-template-columns: 0.9fr 1.1fr 1fr; gap: 14px; }
+    .le-panel {
+      min-width: 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 16px;
+    }
+    .le-panel[data-active="true"] { border-color: #e5b88e; box-shadow: inset 0 0 0 1px #e5b88e; }
+    .le-panel h3 { margin: 0 0 14px; color: #e5b88e; font-size: 0.85rem; letter-spacing: 0.08em; }
+    .le-panel p { margin: 0; }
+    .le-source-list, .le-check-list { margin: 0; padding: 0; list-style: none; }
+    .le-source-list li { padding: 7px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.10); }
+    .le-source-list li:last-child { border-bottom: 0; }
+    .le-output {
+      min-height: 230px;
+      white-space: pre-line;
+      color: #f8f4ea;
+    }
+    .le-placeholder { color: #aebcb6; font-style: italic; }
+    .le-check-list { display: grid; gap: 9px; }
+    .le-check-item {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .le-check-item[data-result="pass"] { background: rgba(96, 187, 140, 0.16); }
+    .le-check-item[data-result="fail"] { background: rgba(220, 112, 91, 0.18); }
+    .le-check-icon { font-weight: 900; }
+    .le-check-item[data-result="pass"] .le-check-icon { color: #9be0bc; }
+    .le-check-item[data-result="fail"] .le-check-icon { color: #ffad9d; }
+    .le-check-item[data-result="pending"] .le-check-icon { color: #aebcb6; }
+    .le-verdict {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+    .le-verdict[data-tone="idle"] { color: #c7d0cc; background: rgba(255, 255, 255, 0.06); }
+    .le-verdict[data-tone="fail"] { color: #ffd3ca; background: rgba(220, 112, 91, 0.18); }
+    .le-verdict[data-tone="pass"] { color: #c7f0da; background: rgba(96, 187, 140, 0.18); }
+    .le-controls {
+      display: grid;
+      grid-template-columns: auto auto auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.13);
+    }
+    .le-control-button {
+      min-height: 48px;
+      padding: 10px 15px;
+      color: #f8f4ea;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .le-control-button:hover { background: rgba(255, 255, 255, 0.10); }
+    .le-control-button[data-primary="true"] { color: #20312b; background: #e5b88e; border-color: #e5b88e; font-weight: 900; }
+    .le-control-button:disabled { cursor: not-allowed; opacity: 0.42; }
+    .le-range { width: 100%; accent-color: #e5b88e; }
+    .le-step-count { color: #bec8c4; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .le-keyboard { margin: 12px 0 0; color: #aebcb6; font-size: 0.78rem; text-align: right; }
+    .le-concept-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .le-concept-card {
+      position: relative;
+      min-height: 220px;
+      padding: 24px;
+      background: #fffaf0;
+      border: 1px solid #d7cbb8;
+      border-radius: 18px;
+    }
+    .le-concept-number { color: #b85c38; font-size: 0.82rem; font-weight: 900; letter-spacing: 0.1em; }
+    .le-concept-card h3 { margin: 18px 0 10px; font-family: "Noto Serif TC", "Songti TC", serif; font-size: 1.35rem; }
+    .le-concept-card p { margin: 0; color: #62594f; }
+    .le-compare { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #cfc4b1; border-radius: 20px; overflow: hidden; }
+    .le-compare-column { padding: 30px; background: rgba(255, 255, 255, 0.46); }
+    .le-compare-column + .le-compare-column { border-left: 1px solid #cfc4b1; background: #fffaf0; }
+    .le-compare h3 { margin: 0 0 14px; font-family: "Noto Serif TC", "Songti TC", serif; font-size: 1.5rem; }
+    .le-compare ul { margin: 0; padding-left: 1.2em; }
+    .le-compare li + li { margin-top: 8px; }
+    .le-boundary {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 30px;
+      padding: 34px;
+      color: #f7f1e6;
+      background: #8b472d;
+      border-radius: 20px;
+    }
+    .le-boundary h2 { margin: 0; font-family: "Noto Serif TC", "Songti TC", serif; font-size: clamp(1.7rem, 3vw, 2.5rem); line-height: 1.2; }
+    .le-boundary ul { margin: 0; padding-left: 1.2em; }
+    .le-boundary li + li { margin-top: 10px; }
+    .le-questions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; counter-reset: questions; }
+    .le-question {
+      counter-increment: questions;
+      padding: 22px 24px;
+      border-top: 4px solid #275c4e;
+      background: rgba(255, 255, 255, 0.52);
+    }
+    .le-question::before { content: "0" counter(questions); display: block; color: #8b472d; font-weight: 900; font-size: 0.78rem; letter-spacing: 0.1em; }
+    .le-question p { margin: 8px 0 0; font-size: 1.08rem; font-weight: 800; }
+    .le-footer { padding: 34px 0 48px; border-top: 1px solid #cfc4b1; color: #645b51; }
+    .le-footer-row { display: flex; justify-content: space-between; gap: 24px; align-items: center; }
+    .le-footer p { margin: 0; }
+    .le-footer-links { display: flex; flex-wrap: wrap; gap: 18px; }
+    .le-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    @media (max-width: 900px) {
+      .le-panels { grid-template-columns: 1fr; }
+      .le-panel { min-height: auto; }
+      .le-concept-grid { grid-template-columns: repeat(2, 1fr); }
+      .le-boundary { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      body { font-size: 18px; }
+      .le-shell { width: calc(100% - 24px); }
+      .le-hero { padding: 48px 0 38px; }
+      .le-main { padding: 38px 0 60px; }
+      .le-section { margin-top: 54px; }
+      .le-demo-head { flex-direction: column; padding: 22px 18px 18px; }
+      .le-stage { padding: 18px; }
+      .le-progress-list { grid-template-columns: repeat(3, 1fr); }
+      .le-current-callout { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .le-controls { grid-template-columns: 1fr 1fr 1fr; }
+      .le-range { grid-column: 1 / -1; grid-row: 2; }
+      .le-step-count { grid-column: 1 / -1; text-align: center; }
+      .le-keyboard { display: none; }
+      .le-concept-grid, .le-questions { grid-template-columns: 1fr; }
+      .le-compare { grid-template-columns: 1fr; }
+      .le-compare-column + .le-compare-column { border-left: 0; border-top: 1px solid #cfc4b1; }
+      .le-boundary { padding: 26px 22px; }
+      .le-footer-row { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="le-app">
+    <header class="le-hero">
+      <div class="le-shell">
+        <p class="le-kicker">給第一次接觸 AI 工作流程的你</p>
+        <h1>什麼是<br>迴圈工程？</h1>
+        <p class="le-hero-lead">不用先懂江江教練的規則，也不用看過他的工作流程。你只要看一件事：AI 做完以後，有沒有一套看得見的驗收方式，決定它要修正，還是可以停下來。</p>
+        <p class="le-definition">一句話：先做，接著驗收。沒過就只修未過項，再驗一次。符合完成條件才停止。</p>
+      </div>
+    </header>
+
+    <main class="le-main">
+      <div class="le-shell">
+        <section class="le-section" aria-labelledby="demo-title">
+          <p class="le-eyebrow">先看它跑一輪</p>
+          <h2 class="le-section-title" id="demo-title">把有缺漏的課前通知，修到真的可以傳</h2>
+          <p class="le-section-intro">下面是一段教學模擬。原始資料已經給齊，AI 第一次仍寫漏了兩項。請按播放，觀察它為什麼不能在第一版就喊完成。</p>
+
+          <div class="le-demo" id="le-demo" tabindex="0">
+            <div class="le-demo-head">
+              <div>
+                <p class="le-demo-label">互動示範</p>
+                <h3 class="le-demo-title">任務：產出一份可直接傳給學員的課前通知</h3>
+              </div>
+              <span class="le-round-badge" id="le-round-badge">尚未開始</span>
+            </div>
+
+            <div class="le-stage">
+              <ol class="le-progress-list" aria-label="迴圈進度">
+                <li class="le-progress-item" data-step="0">讀取資料</li>
+                <li class="le-progress-item" data-step="1">第一次執行</li>
+                <li class="le-progress-item" data-step="2">第一次驗收</li>
+                <li class="le-progress-item" data-step="3">修正未過項</li>
+                <li class="le-progress-item" data-step="4">再次驗收</li>
+                <li class="le-progress-item" data-step="5">符合條件，停止</li>
+              </ol>
+
+              <div class="le-current-callout" aria-live="polite">
+                <strong id="le-current-title">先讀取原始資料</strong>
+                <span id="le-current-note">完成標準在執行前就先寫好</span>
+              </div>
+
+              <div class="le-panels">
+                <article class="le-panel" id="le-source-panel" data-active="true">
+                  <h3>01 原始資料</h3>
+                  <ul class="le-source-list">
+                    <li>課程：迴圈工程入門</li>
+                    <li>日期：9 月 28 日</li>
+                    <li>時間：19:30 到 21:00</li>
+                    <li>地點：線上教室</li>
+                    <li>入口：課前 10 分鐘開放</li>
+                    <li>準備：筆電與任一 AI 工具</li>
+                  </ul>
+                </article>
+
+                <article class="le-panel" id="le-output-panel" data-active="false">
+                  <h3>02 AI 產出</h3>
+                  <p class="le-output" id="le-output"><span class="le-placeholder">等待執行</span></p>
+                </article>
+
+                <article class="le-panel" id="le-check-panel" data-active="false">
+                  <h3>03 驗收器</h3>
+                  <ul class="le-check-list" id="le-check-list"></ul>
+                  <p class="le-verdict" id="le-verdict" data-tone="idle" aria-live="polite">還沒驗收，不能宣告完成</p>
+                </article>
+              </div>
+
+              <div class="le-controls" aria-label="示範控制列">
+                <button class="le-control-button" id="le-prev" type="button">上一步</button>
+                <button class="le-control-button" id="le-play" data-primary="true" type="button" aria-pressed="false">播放</button>
+                <button class="le-control-button" id="le-next" type="button">下一步</button>
+                <label class="le-sr-only" for="le-range">迴圈進度</label>
+                <input class="le-range" id="le-range" type="range" min="0" max="5" value="0" step="1">
+                <span class="le-step-count" id="le-step-count">1 / 6</span>
+              </div>
+              <p class="le-keyboard">鍵盤也可操作：左右方向鍵切換，空白鍵播放或暫停</p>
+            </div>
+          </div>
+
+          <noscript>
+            <p>靜態摘要：第一版漏了精確時間與課前準備，驗收未過。AI 只補回這兩項，再次驗收五項全過，符合完成條件後停止。</p>
+          </noscript>
+        </section>
+
+        <section class="le-section" aria-labelledby="loop-title">
+          <p class="le-eyebrow">拆開來看</p>
+          <h2 class="le-section-title" id="loop-title">迴圈需要四個可見零件</h2>
+          <p class="le-section-intro">學員不用背江江教練的全部機制，只要能指出這四件事，就看得出一個流程是不是迴圈工程。</p>
+          <div class="le-concept-grid">
+            <article class="le-concept-card">
+              <span class="le-concept-number">01 GOAL</span>
+              <h3>目標</h3>
+              <p>這一輪要交出什麼成品。例：可直接傳送的課前通知。</p>
+            </article>
+            <article class="le-concept-card">
+              <span class="le-concept-number">02 ACTION</span>
+              <h3>執行</h3>
+              <p>AI 依現有資料產出第一版，不先假設自己一次就會全對。</p>
+            </article>
+            <article class="le-concept-card">
+              <span class="le-concept-number">03 CHECK</span>
+              <h3>驗收</h3>
+              <p>用事先寫好的條件逐項檢查，留下哪一項通過、哪一項未過。</p>
+            </article>
+            <article class="le-concept-card">
+              <span class="le-concept-number">04 STOP</span>
+              <h3>停止條件</h3>
+              <p>未過就回去修，全部通過才停。缺資料時也要停下來問人。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="le-section" aria-labelledby="compare-title">
+          <p class="le-eyebrow">兩種思路</p>
+          <h2 class="le-section-title" id="compare-title">提示詞管這一次怎麼做，迴圈管做完之後怎麼辦</h2>
+          <p class="le-section-intro">兩種方法可以一起用，各自負責不同層次。</p>
+          <div class="le-compare">
+            <article class="le-compare-column">
+              <h3>提示詞</h3>
+              <ul>
+                <li>交代角色、資料與輸出格式</li>
+                <li>讓 AI 知道這一次要怎麼做</li>
+                <li>適合改善第一版的方向</li>
+              </ul>
+            </article>
+            <article class="le-compare-column">
+              <h3>迴圈工程</h3>
+              <ul>
+                <li>先定義怎樣才算完成</li>
+                <li>驗收未過就把證據送回下一輪</li>
+                <li>用停止條件避免假完成與無限修改</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="le-section le-boundary" aria-labelledby="boundary-title">
+          <h2 id="boundary-title">什麼不該交給迴圈自己決定？</h2>
+          <ul>
+            <li>原始資料根本沒有答案時，停下來問人，不准自己補。</li>
+            <li>文章好不好、策略對不對，交給人或另一位評審，不硬塞成機器分數。</li>
+            <li>公開發送、花錢、刪除資料等動作，保留人工確認。</li>
+          </ul>
+        </section>
+
+        <section class="le-section" aria-labelledby="apply-title">
+          <p class="le-eyebrow">換成你的工作</p>
+          <h2 class="le-section-title" id="apply-title">先回答四個問題，就能畫出第一個迴圈</h2>
+          <div class="le-questions">
+            <article class="le-question"><p>這次要交付的成品是什麼？</p></article>
+            <article class="le-question"><p>哪幾項標準可以客觀檢查？</p></article>
+            <article class="le-question"><p>未通過時，要把哪些證據送回去修？</p></article>
+            <article class="le-question"><p>什麼條件成立時，流程才可以停止？</p></article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="le-footer">
+      <div class="le-shell le-footer-row">
+        <p>互動教材，2026 江江教練</p>
+        <div class="le-footer-links">
+          <a href="https://github.com/Jiang-Yude/verifiable-loop-mechanism" rel="noopener noreferrer">查看可驗證迴圈機制</a>
+          <a href="#demo-title">重看示範</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const checks = [
+        "日期與時間完整",
+        "地點與進場時間完整",
+        "課前準備完整",
+        "沒有加入來源未提供的資訊",
+        "資訊分段，手機可讀"
+      ];
+
+      const firstDraft = "同學你好：\n\n迴圈工程入門將在 9 月 28 日進行。\n\n地點：線上教室\n入口：課前 10 分鐘開放";
+      const fixedDraft = "同學你好：\n\n迴圈工程入門將在 9 月 28 日 19:30 到 21:00 進行。\n\n地點：線上教室\n入口：課前 10 分鐘開放\n準備：筆電與任一 AI 工具";
+
+      const states = [
+        {
+          title: "先讀取原始資料",
+          note: "完成標準在執行前就先寫好",
+          badge: "尚未開始",
+          active: "source",
+          output: "",
+          results: ["pending", "pending", "pending", "pending", "pending"],
+          verdict: "還沒驗收，不能宣告完成",
+          tone: "idle"
+        },
+        {
+          title: "第一次執行：先產出一版",
+          note: "這一版看起來通順，但不代表已經完成",
+          badge: "第 1 輪",
+          active: "output",
+          output: firstDraft,
+          results: ["pending", "pending", "pending", "pending", "pending"],
+          verdict: "成品已產出，下一步要驗收",
+          tone: "idle"
+        },
+        {
+          title: "第一次驗收：找到兩個未過項",
+          note: "精確時間與課前準備都漏了",
+          badge: "第 1 輪驗收",
+          active: "check",
+          output: firstDraft,
+          results: ["fail", "pass", "fail", "pass", "pass"],
+          verdict: "3 項通過，2 項未過。不得停止",
+          tone: "fail"
+        },
+        {
+          title: "只修未過項，不重寫整份內容",
+          note: "把驗收證據送回下一輪",
+          badge: "第 2 輪",
+          active: "output",
+          output: fixedDraft,
+          results: ["pending", "pass", "pending", "pass", "pass"],
+          verdict: "已補上兩個缺漏，準備再次驗收",
+          tone: "idle"
+        },
+        {
+          title: "再次驗收：五項全部通過",
+          note: "完成與否由條件決定，不由 AI 自己感覺",
+          badge: "第 2 輪驗收",
+          active: "check",
+          output: fixedDraft,
+          results: ["pass", "pass", "pass", "pass", "pass"],
+          verdict: "5 項全部通過，完成條件成立",
+          tone: "pass"
+        },
+        {
+          title: "停止迴圈，交給人確認是否發送",
+          note: "通過驗收不等於自動對外送出",
+          badge: "完成",
+          active: "check",
+          output: fixedDraft,
+          results: ["pass", "pass", "pass", "pass", "pass"],
+          verdict: "可以停止。公開發送仍由人決定",
+          tone: "pass"
+        }
+      ];
+
+      const root = document.getElementById("le-demo");
+      if (!root) return;
+
+      const title = document.getElementById("le-current-title");
+      const note = document.getElementById("le-current-note");
+      const badge = document.getElementById("le-round-badge");
+      const output = document.getElementById("le-output");
+      const checkList = document.getElementById("le-check-list");
+      const verdict = document.getElementById("le-verdict");
+      const range = document.getElementById("le-range");
+      const count = document.getElementById("le-step-count");
+      const playButton = document.getElementById("le-play");
+      const prevButton = document.getElementById("le-prev");
+      const nextButton = document.getElementById("le-next");
+      const panels = {
+        source: document.getElementById("le-source-panel"),
+        output: document.getElementById("le-output-panel"),
+        check: document.getElementById("le-check-panel")
+      };
+
+      let step = 0;
+      let timer = null;
+
+      function resultLabel(result) {
+        if (result === "pass") return { icon: "✓", text: "通過" };
+        if (result === "fail") return { icon: "×", text: "未過" };
+        return { icon: "·", text: "待驗" };
+      }
+
+      function syncPlayButton() {
+        playButton.textContent = timer ? "暫停" : step === states.length - 1 ? "重播" : "播放";
+        playButton.setAttribute("aria-pressed", String(Boolean(timer)));
+      }
+
+      function stopPlayback() {
+        if (timer) window.clearInterval(timer);
+        timer = null;
+        syncPlayButton();
+      }
+
+      function render(nextStep, updateHash = false) {
+        step = Math.max(0, Math.min(states.length - 1, nextStep));
+        const state = states[step];
+
+        title.textContent = state.title;
+        note.textContent = state.note;
+        badge.textContent = state.badge;
+        output.textContent = state.output || "等待執行";
+        if (!state.output) output.classList.add("le-placeholder");
+        else output.classList.remove("le-placeholder");
+
+        checkList.replaceChildren();
+        checks.forEach((item, index) => {
+          const result = state.results[index];
+          const label = resultLabel(result);
+          const li = document.createElement("li");
+          li.className = "le-check-item";
+          li.dataset.result = result;
+          const icon = document.createElement("span");
+          icon.className = "le-check-icon";
+          icon.setAttribute("aria-hidden", "true");
+          icon.textContent = label.icon;
+          const copy = document.createElement("span");
+          copy.textContent = item;
+          const spoken = document.createElement("span");
+          spoken.className = "le-sr-only";
+          spoken.textContent = `：${label.text}`;
+          copy.appendChild(spoken);
+          li.append(icon, copy);
+          checkList.appendChild(li);
+        });
+
+        verdict.textContent = state.verdict;
+        verdict.dataset.tone = state.tone;
+        Object.entries(panels).forEach(([key, panel]) => {
+          panel.dataset.active = String(key === state.active);
+        });
+        document.querySelectorAll(".le-progress-item").forEach((item, index) => {
+          item.dataset.state = index < step ? "done" : index === step ? "current" : "future";
+          if (index === step) item.setAttribute("aria-current", "step");
+          else item.removeAttribute("aria-current");
+        });
+
+        range.value = String(step);
+        count.textContent = `${step + 1} / ${states.length}`;
+        prevButton.disabled = step === 0;
+        nextButton.disabled = step === states.length - 1;
+        syncPlayButton();
+
+        if (updateHash) {
+          const hash = `#step-${step + 1}`;
+          if (window.location.hash !== hash) {
+            history.replaceState(null, "", hash);
+          }
+        }
+      }
+
+      function startPlayback() {
+        if (timer) {
+          stopPlayback();
+          return;
+        }
+        if (step === states.length - 1) render(0, true);
+        playButton.textContent = "暫停";
+        playButton.setAttribute("aria-pressed", "true");
+        timer = window.setInterval(() => {
+          if (step >= states.length - 1) {
+            stopPlayback();
+            return;
+          }
+          render(step + 1, true);
+          if (step === states.length - 1) stopPlayback();
+        }, 1800);
+      }
+
+      playButton.addEventListener("click", startPlayback);
+      prevButton.addEventListener("click", () => { stopPlayback(); render(step - 1, true); });
+      nextButton.addEventListener("click", () => { stopPlayback(); render(step + 1, true); });
+      range.addEventListener("input", (event) => { stopPlayback(); render(Number(event.target.value), true); });
+      root.addEventListener("keydown", (event) => {
+        if (event.target.matches("input, button, a")) return;
+        if (event.altKey || event.metaKey || event.ctrlKey) return;
+        if (event.key === "ArrowRight") { stopPlayback(); render(step + 1, true); }
+        if (event.key === "ArrowLeft") { stopPlayback(); render(step - 1, true); }
+        if (event.code === "Space") { event.preventDefault(); startPlayback(); }
+      });
+
+      function stepFromHash() {
+        const match = window.location.hash.match(/^#step-(\d+)$/);
+        if (!match) return null;
+        const value = Number(match[1]) - 1;
+        return value >= 0 && value < states.length ? value : null;
+      }
+
+      const initialStep = stepFromHash();
+      render(initialStep ?? 0, false);
+      if (initialStep !== null) window.requestAnimationFrame(() => root.scrollIntoView({ block: "start" }));
+      window.addEventListener("hashchange", () => {
+        const hashStep = stepFromHash();
+        if (hashStep !== null) {
+          stopPlayback();
+          render(hashStep, false);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
